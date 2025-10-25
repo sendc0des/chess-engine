@@ -1,5 +1,5 @@
 import pygame as p
-import engine
+import engine, ai
 
 WIDTH = HEIGHT = 512
 DIMENSION = 8
@@ -31,16 +31,17 @@ def main():
     playerClicks = []
     gameOver = False
     running = True
-
+    playerOne = True
+    playerTwo = False
     while running:
-
+        humanTurn = (gs.whiteToMove and playerOne) or (not gs.whiteToMove and playerTwo)
         for e in p.event.get():
 
             if e.type == p.QUIT:
                 running = False
 
             elif e.type == p.MOUSEBUTTONDOWN:
-                if not gameOver:
+                if not gameOver and humanTurn:
                     location = p.mouse.get_pos() # (x, y) location of mouse
                     col = location[0] // SQ_SIZE
                     row = location[1] // SQ_SIZE
@@ -77,6 +78,13 @@ def main():
                     animate = False
                     sqSelected = ()
                     playerClicks = []
+
+        #AI Move
+        if not gameOver and not humanTurn:
+            aiMove = ai.moveFinder(validMoves)
+            gs.makeMove(aiMove)
+            moveMade = True
+            animate = True
 
         if moveMade:
             if animate:
